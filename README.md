@@ -1,6 +1,6 @@
 # 运行流程
 1. git clone https://github.com/916954029/yii2-backend-tpl.git
-2. cd do-you-know-backend
+2. cd yii2-backend-tpl
 3. composer install
 4. php init
 5. 配置 common/config/main-local.php 文件中的 db 部分
