@@ -1,19 +1,11 @@
 <?php
 
-namespace console\controllers;
-
-use Yii;
-use yii\console\Controller;
+use yii\db\Migration;
 
 /**
- * 初始化用户（user）、菜单（menu）及与 rbac 相关（auth_rule、auth_item、auth_item_child、auth_assignment）表的数据
- *
- * yii rbac-migrate
- *
- * Class RbacMigrateController
- * @package console\controllers
+ * Handles the creation of table `{{%rbac}}`.
  */
-class RbacMigrateController extends Controller
+class m200324_022127_create_rbac_table extends Migration
 {
     public $init_sql_auth_item = <<<sql
 INSERT INTO `auth_item` VALUES ('/admin/assignment/assign', '2', null, null, null, '1575855758', '1575855758');
@@ -116,49 +108,65 @@ sql;
 INSERT INTO `auth_assignment` VALUES ('主管理员', '1', '1575856124');
 sql;
 
-    public $init_sql_menu = <<<sql
-INSERT INTO `menu` VALUES ('1', '权限管理', null, null, null, 0x7B2269636F6E223A2022736D696C652D6F227D);
-INSERT INTO `menu` VALUES ('2', '后台用户', '1', '/admin/user/index', null, null);
-INSERT INTO `menu` VALUES ('3', '权限分配', '1', '/admin/assignment/index', null, null);
-INSERT INTO `menu` VALUES ('4', '角色管理', '1', '/admin/role/index', null, null);
-INSERT INTO `menu` VALUES ('5', '权限管理', '1', '/admin/permission/index', null, null);
-INSERT INTO `menu` VALUES ('6', '路由管理', '1', '/admin/route/index', null, null);
-INSERT INTO `menu` VALUES ('7', '规则管理', '1', '/admin/rule/index', null, null);
-INSERT INTO `menu` VALUES ('8', '菜单管理', '1', '/admin/menu/index', null, null);
-sql;
-
-    public $init_sql_user = <<<sql
-INSERT INTO `user` VALUES
-	(
-		NULL,
-		'admin',
-		'gt5fhJCHAD7fNqOT3lh6TKlftp7ukEvS',
-		'$2y$13$.LaTjBm8N7.N/Vo3HwcXhOh3eleP9MxrtOwrmaXj5r9MYYFNul02O',
-		NULL,
-		'admin@do-you-know.com',
-		'10',
-		'1573228800',
-		'1573228800'
-	);
-sql;
-
-    public function actionIndex()
+    /**
+     * {@inheritdoc}
+     */
+    public function safeUp()
     {
-        echo 'table auth_item...' . PHP_EOL;
-        Yii::$app->db->createCommand($this->init_sql_auth_item)->execute();
+        $sql = <<<sql
+create table `auth_rule`
+(
+   `name`                 varchar(64) not null,
+   `data`                 blob,
+   `created_at`           integer,
+   `updated_at`           integer,
+    primary key (`name`)
+) engine InnoDB;
 
-        echo 'table auth_item_child...' . PHP_EOL;
-        Yii::$app->db->createCommand($this->init_sql_auth_item_child)->execute();
+create table `auth_item`
+(
+   `name`                 varchar(64) not null,
+   `type`                 smallint not null,
+   `description`          text,
+   `rule_name`            varchar(64),
+   `data`                 blob,
+   `created_at`           integer,
+   `updated_at`           integer,
+   primary key (`name`),
+   foreign key (`rule_name`) references `auth_rule` (`name`) on delete set null on update cascade,
+   key `type` (`type`)
+) engine InnoDB;
 
-        echo 'table auth_assignment...' . PHP_EOL;
-        Yii::$app->db->createCommand($this->init_sql_auth_assignment)->execute();
+create table `auth_item_child`
+(
+   `parent`               varchar(64) not null,
+   `child`                varchar(64) not null,
+   primary key (`parent`, `child`),
+   foreign key (`parent`) references `auth_item` (`name`) on delete cascade on update cascade,
+   foreign key (`child`) references `auth_item` (`name`) on delete cascade on update cascade
+) engine InnoDB;
 
-        echo 'table menu...' . PHP_EOL;
-        Yii::$app->db->createCommand($this->init_sql_menu)->execute();
+create table `auth_assignment`
+(
+   `item_name`            varchar(64) not null,
+   `user_id`              varchar(64) not null,
+   `created_at`           integer,
+   primary key (`item_name`, `user_id`),
+   foreign key (`item_name`) references `auth_item` (`name`) on delete cascade on update cascade,
+   key `auth_assignment_user_id_idx` (`user_id`)
+) engine InnoDB;
+sql;
+        $this->execute($sql);
+        $this->execute($this->init_sql_auth_item);
+        $this->execute($this->init_sql_auth_item_child);
+        $this->execute($this->init_sql_auth_assignment);
+    }
 
-        echo 'table user...';
-        Yii::$app->db->createCommand($this->init_sql_user)->execute();
-
-        return 0;
+    /**
+     * {@inheritdoc}
+     */
+    public function safeDown()
+    {
+        return false;
     }
 }

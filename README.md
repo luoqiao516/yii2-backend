@@ -4,11 +4,8 @@
 3. composer install
 4. php init
 5. 配置 common/config/main-local.php 文件中的 db 部分
-6. 执行下列迁移文件中的表构建语句
-    - vendor/yiisoft/yii2/rbac/migrations/schema-mysql.sql
-    - vendor/mdmsoft/yii2-admin/migrations/schema-mysql.sql
-7. 执行命令 ```yii rbac-migrate``` 初始化数据
-8. 开始访问!
+6. 执行命令 ```yii migrate```
+7. 开始访问!（后台登录用户名为 admin，密码为 12345）
 
 # 附：
 
