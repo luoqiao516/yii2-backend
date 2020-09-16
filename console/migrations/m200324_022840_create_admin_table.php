@@ -24,7 +24,7 @@ INSERT INTO `user` VALUES
 		NULL,
 		'admin',
 		'gt5fhJCHAD7fNqOT3lh6TKlftp7ukEvS',
-		'$2y$13$.LaTjBm8N7.N/Vo3HwcXhOh3eleP9MxrtOwrmaXj5r9MYYFNul02O',
+		'\$2y\$10\$nOcM\.0O9BzATnI54iHzyjetQIMI5ilMjMnjXBiG2BUNxHvMsjRI2K',
 		NULL,
 		'admin@do-you-know.com',
 		'10',

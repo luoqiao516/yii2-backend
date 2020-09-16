@@ -5,7 +5,7 @@
 4. php init
 5. 配置 common/config/main-local.php 文件中的 db 部分
 6. 执行命令 ```yii migrate```
-7. 开始访问!（后台登录用户名为 admin，密码为 12345）
+7. 开始访问!（后台登录用户名为 admin，密码为 111111）
 
 # 附：
 
